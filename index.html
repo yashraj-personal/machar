@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#f4eeff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mosquito Slayer">
+<title>Mosquito Slayer</title>
+<meta name="description" content="A tiny bedtime arcade game: a sleepy stickman, one very rude mosquito and a whole lot of aim.">
+<meta property="og:title" content="Mosquito Slayer">
+<meta property="og:description" content="Don&rsquo;t let the mosquito reach your face. Hold, aim, zap.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ff8a45'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%2322202c'/%3E%3Cpath d='M18 18l10 10M46 18L36 28M18 46l10-10M46 46L36 36' stroke='%2322202c' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="stage">
+  <canvas id="game" aria-label="Mosquito Slayer game"></canvas>
+
+  <!-- top HUD -->
+  <div id="hud" aria-hidden="false">
+    <button id="btnHome" class="icon-btn glass" aria-label="Back to menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+
+    <div id="scoreBox">
+      <div id="score">0</div>
+      <div id="bestLine">BEST <span id="best">0</span> &middot; LV <span id="lvl">1</span></div>
+      <div id="streakLine" class="streak-line" aria-live="polite"></div>
+    </div>
+
+    <div class="hud-right">
+      <button id="btnPause" class="icon-btn dark" aria-label="Pause">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="5.5" width="3.6" height="13" rx="1.6"/><rect x="13.4" y="5.5" width="3.6" height="13" rx="1.6"/></svg>
+      </button>
+      <button id="btnMute" class="icon-btn glass tiny" aria-label="Mute sound" aria-pressed="false">
+        <svg class="ico-sound" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.4L12 18.6V5.4L7.4 9.5H4z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M18 6a8.5 8.5 0 010 12"/></svg>
+        <svg class="ico-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.4L12 18.6V5.4L7.4 9.5H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="hint" role="status">Hold &amp; drag to aim &middot; release to zap</div>
+
+  <footer id="siteCredit" class="site-credit">
+    <span class="credit-by">Made by</span>
+    <a class="credit-name" href="https://www.instagram.com/c0deryash/" target="_blank" rel="noopener noreferrer" aria-label="c0deryash on Instagram">
+      <svg class="ig-logo" viewBox="0 0 24 24" aria-hidden="true">
+        <defs><linearGradient id="igGrad" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#fdc468"/><stop offset=".3" stop-color="#fa7e1e"/><stop offset=".55" stop-color="#d62976"/><stop offset=".8" stop-color="#962fbf"/><stop offset="1" stop-color="#4f5bd5"/>
+        </linearGradient></defs>
+        <rect width="24" height="24" rx="6.6" fill="url(#igGrad)"/>
+        <rect x="4.6" y="4.6" width="14.8" height="14.8" rx="4.4" fill="none" stroke="#fff" stroke-width="1.7"/>
+        <circle cx="12" cy="12" r="3.5" fill="none" stroke="#fff" stroke-width="1.7"/>
+        <circle cx="16.3" cy="7.7" r="1.05" fill="#fff"/>
+      </svg><b>c0deryash</b></a>
+    <a class="follow-btn" href="https://www.instagram.com/c0deryash/" target="_blank" rel="noopener noreferrer">Follow</a>
+  </footer>
+
+  <!-- start menu -->
+  <section id="screenMenu" class="screen menu">
+    <div class="card menu-card">
+      <img class="bite-sticker" src="assets/faces/sticker.png" alt="" width="388" height="398" decoding="async">
+
+      <div class="eyebrow">The bedroom arcade</div>
+      <h1>Mosquito<br><em>Slayer</em></h1>
+      <p>It&rsquo;s 3 a.m. One mosquito. One sleepy slap.<br>Don&rsquo;t let it reach your face.</p>
+
+      <button id="btnPlay" class="btn primary">Start slapping</button>
+
+      <div class="menu-foot">
+        <button id="btnMuteMenu" class="sound-toggle" aria-pressed="false">
+          <svg class="ico-sound" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.4L12 18.6V5.4L7.4 9.5H4z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M18 6a8.5 8.5 0 010 12"/></svg>
+          <svg class="ico-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.4L12 18.6V5.4L7.4 9.5H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+          <span class="sound-label">Sound on</span>
+        </button>
+        <span class="best-pill">BEST <b id="bestMenu">0</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- pause -->
+  <section id="screenPause" class="screen">
+    <div class="card small-card">
+      <div class="eyebrow">Time out</div>
+      <h2>Paused</h2>
+      <p class="muted">The mosquito is taking a break too. Probably.</p>
+      <button id="btnResume" class="btn primary">Resume</button>
+      <div class="btn-row">
+        <button id="btnRestart" class="btn ghost">Restart</button>
+        <button id="btnMutePause" class="btn ghost">Sound on</button>
+      </div>
+      <button id="btnPauseHome" class="link-btn">Quit to menu</button>
+    </div>
+  </section>
+
+  <!-- game over -->
+  <section id="screenOver" class="screen">
+    <div class="card over-card">
+      <img class="bite-sticker" src="assets/faces/sticker.png" alt="" width="388" height="398" decoding="async">
+      <div class="eyebrow" id="overEyebrow">Case of the bites</div>
+      <h2 id="overTitle">Bitten!</h2>
+      <div class="big-score" id="overScore">0</div>
+      <div class="best-line">
+        <span>Best <b id="overBest">0</b></span>
+        <span class="new-best" id="newBest">NEW BEST</span>
+      </div>
+      <div class="stats" id="overStats">
+        <div><b id="stKills">0</b><span>Kills</span></div>
+        <div><b id="stAcc">0%</b><span>Accuracy</span></div>
+        <div><b id="stCombo">0</b><span>Best combo</span></div>
+      </div>
+      <p class="muted" id="overMsg">The mosquito got the last laugh.</p>
+      <button id="btnAgain" class="btn primary">One more go</button>
+      <button id="btnOverHome" class="link-btn">Back to bed</button>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <button id="btnInstall" class="install-pill" type="button">Install app</button>
+
+  <div id="rotate">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="15" y="5" width="18" height="30" rx="4" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="24" cy="30" r="1.6" fill="currentColor"/><path d="M35 40a14 14 0 01-22 0" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M13 36v4h4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+    <p>Rotate your phone<br><span>This game is better in portrait.</span></p>
+  </div>
+</div>
+
+<script src="assets/sounds/sounds-data.js" defer></script>
+<script src="game.js" defer></script>
+</body>
+</html>
